@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N-ERGY Document Intelligence</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --bg-color: #080c14;
+            --card-bg: rgba(15, 23, 42, 0.65);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --accent-gradient: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            --accent-glow: rgba(99, 102, 241, 0.2);
+            --success-color: #10b981;
+            --error-color: #ef4444;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.1) 0px, transparent 50%);
+            color: var(--text-primary);
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 0;
+            background: linear-gradient(to right, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        header p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin: 10px 0 0 0;
+            line-height: 1.5;
+        }
+
+        /* Combined Control Dashboard */
+        .dashboard-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 24px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: box-shadow 0.3s ease, border-color 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .dashboard-panel:focus-within {
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 15px var(--accent-glow);
+        }
+
+        /* Large Query Input */
+        textarea#questionInput {
+            width: 100%;
+            min-height: 120px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            padding: 16px;
+            font-family: inherit;
+            font-size: 15px;
+            line-height: 1.6;
+            resize: vertical;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+        }
+
+        textarea#questionInput:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.04);
+            border-color: #6366f1;
+        }
+
+        /* Bottom Controls Row */
+        .controls-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .upload-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-grow: 1;
+            min-width: 280px;
+        }
+
+        .custom-file-input {
+            flex-grow: 1;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px dashed var(--border-color);
+            padding: 8px 12px;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .custom-file-input:hover {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.04);
+        }
+
+        .button-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        button {
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        /* Primary Action (Ask) */
+        #askBtn {
+            background: var(--accent-gradient);
+            color: white;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+        }
+
+        #askBtn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.45);
+        }
+
+        /* Upload Action */
+        #uploadBtn {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        #uploadBtn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-1px);
+        }
+
+        /* Reset Link/Button */
+        #resetBtn {
+            background: transparent;
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            padding: 10px 16px;
+        }
+
+        #resetBtn:hover {
+            background: rgba(239, 68, 68, 0.08);
+            border-color: rgba(239, 68, 68, 0.5);
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.15);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Status Details */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border-color);
+            padding-top: 12px;
+            margin-top: 4px;
+        }
+
+        #stats {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+        }
+
+        /* Upload Results Container */
+        #uploadResults {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 4px;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .file-row {
+            font-size: 12px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .status-ok {
+            border-color: rgba(16, 185, 129, 0.2);
+            background: rgba(16, 185, 129, 0.03);
+            color: #34d399;
+        }
+
+        .status-error,
+        .status-empty {
+            border-color: rgba(239, 68, 68, 0.2);
+            background: rgba(239, 68, 68, 0.03);
+            color: #f87171;
+        }
+
+        /* Output Answers */
+        #answerBox {
+            margin-top: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .answer-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .answer-text {
+            line-height: 1.7;
+            font-size: 15px;
+            color: #e5e7eb;
+            white-space: pre-wrap;
+        }
+
+        .answer-text h3 {
+            border-left: 4px solid #8b5cf6;
+            margin-top: 24px;
+            padding-left: 10px;
+            color: #c084fc;
+        }
+
+        h4 {
+            margin: 24px 0 12px 0;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        .citations-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .citation {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--border-color);
+            border-left: 3px solid #8b5cf6;
+            border-radius: 0 8px 8px 0;
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #d1d5db;
+        }
+
+        .citation b {
+            color: #a78bfa;
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .small {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>📄 N-ERGY Document Intelligence</h1>
+            <p>Upload files, query details, and view insights. Enter queries in the input box, select PDFs, and run uploads or requests.</p>
+        </header>
+
+        <div class="dashboard-panel">
+            <textarea id="questionInput" placeholder="Ask a question about the uploaded PDFs... (Shift+Enter for new line, Enter to ask)"></textarea>
+            
+            <div class="controls-row">
+                <div class="upload-group">
+                    <input type="file" id="fileInput" class="custom-file-input" multiple accept="application/pdf">
+                    <button id="uploadBtn">Upload</button>
+                </div>
+                
+                <div class="button-group">
+                    <button id="resetBtn">Clear Index</button>
+                    <button id="askBtn">Ask Question</button>
+                </div>
+            </div>
+
+            <div id="uploadResults"></div>
+
+            <div class="status-bar">
+                <div id="stats">Indexed chunks: ...</div>
+                <div class="small">Max 50 PDFs per upload</div>
+            </div>
+        </div>
+
+        <div id="answerBox"></div>
+    </div>
+
+    <script>
+        const $ = id => document.getElementById(id);
+
+        async function refreshStats() {
+            try {
+                const r = await fetch('/api/status');
+                const d = await r.json();
+                $('stats').innerText = `Indexed chunks: ${d.total_chunks || 0}`;
+            } catch (e) {
+                $('stats').innerText = `Indexed chunks: Error loading`;
+            }
+        }
+        refreshStats();
+
+        $('uploadBtn').onclick = async () => {
+            const files = $('fileInput').files;
+            if (!files.length) return alert('Choose at least one PDF.');
+            const fd = new FormData();
+            for (const f of files) fd.append('files', f);
+            $('uploadBtn').disabled = true;
+            $('uploadResults').innerText = 'Uploading + indexing...';
+            try {
+                const r = await fetch('/api/upload', { method: 'POST', body: fd });
+                const d = await r.json();
+                if (d.error) { $('uploadResults').innerText = 'Error: ' + d.error; return; }
+                $('uploadResults').innerHTML = d.files.map(f =>
+                    `<div class="file-row status-${f.status}">
+                        <span>${f.filename}</span>
+                        <span>${f.status}${f.chunks ? ' (' + f.chunks + ' chunks)' : ''}${f.message ? ' - ' + f.message : ''}</span>
+                     </div>`
+                ).join('');
+                refreshStats();
+            } catch (e) {
+                $('uploadResults').innerText = 'Upload failed: ' + e;
+            } finally {
+                $('uploadBtn').disabled = false;
+            }
+        };
+
+        $('resetBtn').onclick = async () => {
+            if (!confirm('Are you sure you want to clear the vector index and all uploaded files?')) return;
+            await fetch('/api/reset', { method: 'POST' });
+            $('uploadResults').innerText = '';
+            $('uploadResults').innerHTML = '';
+            $('answerBox').innerHTML = '';
+            refreshStats();
+        };
+
+        $('askBtn').onclick = async () => {
+            const q = $('questionInput').value.trim();
+            if (!q) return;
+            $('askBtn').disabled = true;
+            $('answerBox').innerHTML = '<div class="answer-panel"><p class="small">Thinking...</p></div>';
+            try {
+                const r = await fetch('/api/query', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question: q })
+                });
+                const d = await r.json();
+                if (d.error) { 
+                    $('answerBox').innerHTML = `<div class="answer-panel"><p class="status-error">${d.error}</p></div>`; 
+                    return; 
+                }
+                
+                let html = `<div class="answer-panel">
+                    <div class="answer-text">${d.answer}</div>`;
+                
+                if (d.citations && d.citations.length) {
+                    html += '<h4>Sources Cited</h4>';
+                    html += '<div class="citations-list">';
+                    html += d.citations.map(c =>
+                        `<div class="citation">
+                            <b>[${c.index}] ${c.source}, page ${c.page}</b>
+                            ${c.text}
+                         </div>`
+                    ).join('');
+                    html += '</div>';
+                }
+                html += '</div>';
+                
+                $('answerBox').innerHTML = html;
+            } catch (e) {
+                $('answerBox').innerHTML = `<div class="answer-panel"><p class="status-error">Query failed: ${e}</p></div>`;
+            } finally {
+                $('askBtn').disabled = false;
+            }
+        };
+
+        $('questionInput').addEventListener('keydown', e => { 
+            if (e.key === 'Enter' && !e.shiftKey) { 
+                e.preventDefault(); 
+                $('askBtn').click(); 
+            } 
+        });
+    </script>
+</body>
+
+</html>

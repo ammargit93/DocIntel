@@ -2,7 +2,7 @@ from typing import List, Dict, Any
 import chromadb
 from chromadb.utils import embedding_functions
 
-PERSIST_DIR = "../chroma_db"
+PERSIST_DIR = "/chroma_db"
 COLLECTION_NAME = "documents"
 
 # Local, fast embedding model -> chosen for latency (see module docstring).
@@ -33,7 +33,7 @@ def add_chunks(chunks: List[Any]) -> int:
     )
     return len(chunks)
 
-def query(question: str, n_results: int = 5) -> List[Dict]:
+def query(question: str, n_results: int = 20) -> List[Dict]:
     """Return top-k relevant chunks with their metadata + distance score."""
     collection = get_collection()
     if collection.count() == 0:

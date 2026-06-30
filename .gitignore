@@ -1,6 +1,7 @@
-.env
-.venv/
 venv/
 __pycache__/
 *.pyc
-chroma_db
+backend/uploads/*
+!backend/uploads/.gitkeep
+chroma_db/
+.env

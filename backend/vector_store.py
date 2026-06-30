@@ -2,7 +2,7 @@ from typing import List, Dict, Any
 import chromadb
 from chromadb.utils import embedding_functions
 
-PERSIST_DIR = "/chroma_db"
+PERSIST_DIR = "/tmp/chroma_db"
 COLLECTION_NAME = "documents"
 
 # Local, fast embedding model -> chosen for latency (see module docstring).
